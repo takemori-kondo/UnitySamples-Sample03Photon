@@ -55,6 +55,7 @@ namespace Photon.Realtime.Demo
             }
         }
 
+        #region IConnectionCallbacks ###########################################################
 
         public void OnConnected()
         {
@@ -85,6 +86,19 @@ namespace Photon.Realtime.Demo
             regionHandler.PingMinimumOfRegions(this.OnRegionPingCompleted, null);
         }
 
+        /// <summary>A callback of the RegionHandler, provided in OnRegionListReceived.</summary>
+        /// <param name="regionHandler">The regionHandler wraps up best region and other region relevant info.</param>
+        private void OnRegionPingCompleted(RegionHandler regionHandler)
+        {
+            Debug.Log("OnRegionPingCompleted " + regionHandler.BestRegion);
+            Debug.Log("RegionPingSummary: " + regionHandler.SummaryToCache);
+            this.lbc.ConnectToRegionMaster(regionHandler.BestRegion.Code);
+        }
+
+        #endregion
+
+        #region ILobbyCallbacks ################################################################
+
         public void OnRoomListUpdate(List<RoomInfo> roomList)
         {
         }
@@ -100,6 +114,10 @@ namespace Photon.Realtime.Demo
         public void OnLeftLobby()
         {
         }
+
+        #endregion
+
+        #region IMatchmakingCallbacks ##########################################################
 
         public void OnFriendListUpdate(List<FriendInfo> friendList)
         {
@@ -132,14 +150,6 @@ namespace Photon.Realtime.Demo
         {
         }
 
-
-        /// <summary>A callback of the RegionHandler, provided in OnRegionListReceived.</summary>
-        /// <param name="regionHandler">The regionHandler wraps up best region and other region relevant info.</param>
-        private void OnRegionPingCompleted(RegionHandler regionHandler)
-        {
-            Debug.Log("OnRegionPingCompleted " + regionHandler.BestRegion);
-            Debug.Log("RegionPingSummary: " + regionHandler.SummaryToCache);
-            this.lbc.ConnectToRegionMaster(regionHandler.BestRegion.Code);
-        }
+        #endregion
     }
 }

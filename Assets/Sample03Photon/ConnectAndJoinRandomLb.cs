@@ -4,8 +4,10 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using ExitGames.Client.Photon;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +20,9 @@ namespace Photon.Realtime.Demo
         private LoadBalancingClient lbc;
 
         private ConnectionHandler ch;
-        public Text StateUiText;
+        [SerializeField] private Text StateUiText;
+        [SerializeField] private Button btnJoin;
+        private bool btnJoinIsPressed = false;
 
         public void Start()
         {
@@ -36,6 +40,8 @@ namespace Photon.Realtime.Demo
                 this.ch.Client = this.lbc;
                 this.ch.StartFallbackSendAckThread();
             }
+
+            this.btnJoin?.onClick.AddListener(() => OnBtnJoinClick());
         }
 
         public void Update()
@@ -50,9 +56,16 @@ namespace Photon.Realtime.Demo
                 string state = client.State.ToString();
                 if (uiText != null && !uiText.text.Equals(state))
                 {
-                    uiText.text = "State: " + state;
+                    uiText.text = this.GetStateText(client, state);
                 }
             }
+        }
+
+        private string GetStateText(LoadBalancingClient client, string state)
+        {
+            var currentRoom = client.CurrentRoom;
+            return "State: " + state + "\n"
+                + "Current Room: " + (currentRoom?.Name ?? "") + "\n";
         }
 
         #region IConnectionCallbacks ###########################################################
@@ -64,7 +77,6 @@ namespace Photon.Realtime.Demo
         public void OnConnectedToMaster()
         {
             Debug.Log("OnConnectedToMaster");
-            this.lbc.OpJoinRandomRoom();    // joins any open room (no filter)
         }
 
         public void OnDisconnected(DisconnectCause cause)
@@ -143,7 +155,12 @@ namespace Photon.Realtime.Demo
         public void OnJoinRandomFailed(short returnCode, string message)
         {
             Debug.Log("OnJoinRandomFailed");
-            this.lbc.OpCreateRoom(new EnterRoomParams());
+            var param = new EnterRoomParams();
+            // param.Lobby
+            param.RoomName = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+            param.RoomOptions = new RoomOptions();
+            param.RoomOptions.MaxPlayers = 4;
+            this.lbc.OpCreateRoom(param);
         }
 
         public void OnLeftRoom()
@@ -151,5 +168,21 @@ namespace Photon.Realtime.Demo
         }
 
         #endregion
+
+        private void OnBtnJoinClick()
+        {
+            this.btnJoinIsPressed = !this.btnJoinIsPressed;
+            var btnJoinText = this.btnJoin.GetComponentInChildren<TextMeshProUGUI>();
+            if (this.btnJoinIsPressed)
+            {
+                btnJoinText.text = "Exit Room";
+                this.lbc.OpJoinRandomRoom();    // joins any open room (no filter)
+            }
+            else
+            {
+                btnJoinText.text = "Join";
+                this.lbc.OpLeaveRoom(false);
+            }
+        }
     }
 }

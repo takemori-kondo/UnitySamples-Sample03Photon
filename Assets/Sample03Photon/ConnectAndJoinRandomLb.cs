@@ -23,6 +23,11 @@ namespace Photon.Realtime.Demo
         [SerializeField] private Text StateUiText;
         [SerializeField] private Button btnJoin;
         private bool btnJoinIsPressed = false;
+        private const string CHARACTER = "character";
+        [SerializeField] private Button btnChara1;
+        [SerializeField] private Button btnChara2;
+        [SerializeField] private Button btnChara3;
+        [SerializeField] private Button btnChara4;
 
         public void Start()
         {
@@ -42,6 +47,10 @@ namespace Photon.Realtime.Demo
             }
 
             this.btnJoin?.onClick.AddListener(() => OnBtnJoinClick());
+            this.btnChara1?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara1));
+            this.btnChara2?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara2));
+            this.btnChara3?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara3));
+            this.btnChara4?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara4));
         }
 
         public void Update()
@@ -63,9 +72,26 @@ namespace Photon.Realtime.Demo
 
         private string GetStateText(LoadBalancingClient client, string state)
         {
+            var selectedChara = client.LocalPlayer.CustomProperties[CHARACTER] ?? "";
             var currentRoom = client.CurrentRoom;
+            var roomMembers = "";
+            if (currentRoom != null)
+            {
+                foreach (var kvp in currentRoom.Players)
+                {
+                    var player = kvp.Value;
+                    string memberChara = player.CustomProperties[CHARACTER]?.ToString();
+                    if (!string.IsNullOrEmpty(memberChara))
+                    {
+                        roomMembers += memberChara + " ";
+                    }
+                }
+                roomMembers.Trim();
+            }
             return "State: " + state + "\n"
-                + "Current Room: " + (currentRoom?.Name ?? "") + "\n";
+                + "Current Room: " + (currentRoom?.Name ?? "") + "\n"
+                + "Selected Chara: " + selectedChara + "\n"
+                + "Room Members: " + roomMembers;
         }
 
         #region IConnectionCallbacks ###########################################################
@@ -183,6 +209,18 @@ namespace Photon.Realtime.Demo
                 btnJoinText.text = "Join";
                 this.lbc.OpLeaveRoom(false);
             }
+        }
+
+        private void OnBtnCharaClick(Button button)
+        {
+            var hashtable = new Hashtable();
+            hashtable[CHARACTER] =
+                button == this.btnChara1 ? "chara1" :
+                button == this.btnChara2 ? "chara2" :
+                button == this.btnChara3 ? "chara3" :
+                button == this.btnChara4 ? "chara4" :
+                "unknown";
+            this.lbc.LocalPlayer.SetCustomProperties(hashtable);
         }
     }
 }

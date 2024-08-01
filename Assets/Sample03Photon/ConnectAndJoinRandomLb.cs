@@ -30,6 +30,8 @@ namespace Photon.Realtime.Demo
         [SerializeField] private Button btnChara4;
         private const int EVENT_CODE_DEBUG = 0;
         [SerializeField] private Button btnOpRaiseEvent;
+        private float delta_sec = 0f;
+        private const float INTERVAL_SEC = 0.8f;
 
         public void Start()
         {
@@ -61,7 +63,12 @@ namespace Photon.Realtime.Demo
             LoadBalancingClient client = this.lbc;
             if (client != null)
             {
-                client.Service();
+                this.delta_sec += Time.deltaTime;
+                if (INTERVAL_SEC <= this.delta_sec)
+                {
+                    this.delta_sec = 0f;
+                    client.Service();
+                }
 
 
                 Text uiText = this.StateUiText;

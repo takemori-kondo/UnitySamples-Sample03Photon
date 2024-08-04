@@ -214,6 +214,11 @@ namespace Photon.Realtime.Demo
                 var eventContent = photonEvent.Parameters?[ParameterCode.Data] as string;
                 Debug.Log($"<color=#99FF99>OnEvent eventCode={photonEvent.Code}, eventContent={eventContent}</color>");
             }
+            // https://doc.photonengine.com/pun/current/gameplay/rpcsandraiseevent
+            if (photonEvent.Code < 200)
+            {
+                this.OnCustomEventReceived?.Invoke(this, photonEvent);
+            }
         }
 
         #endregion
@@ -250,8 +255,34 @@ namespace Photon.Realtime.Demo
         {
             var selectedChara = this.lbc.LocalPlayer.CustomProperties[CHARACTER] ?? "unknown";
             var eventContent = $"{selectedChara} sent debug message!";
-            this.lbc.OpRaiseEvent(EVENT_CODE_DEBUG, eventContent, RaiseEventOptions.Default, SendOptions.SendReliable);
-            Debug.Log("<color=#99FF99>OpRaiseEvent</color>");
+            this.OpRaiseEvent(EVENT_CODE_DEBUG, eventContent);
+        }
+
+        public event EventHandler<EventData> OnCustomEventReceived;
+        public Dictionary<int, Player> Players { get { return this.lbc?.CurrentRoom?.Players; } }
+        public Dictionary<int, Player> OtherPlayers
+        {
+            get
+            {
+                var allPlayers = this.lbc?.CurrentRoom?.Players;
+                if (allPlayers == null) return null;
+                var otherPlayers = new Dictionary<int, Player>();
+                foreach (var kvp in allPlayers)
+                {
+                    var player = kvp.Value;
+                    if (!player.IsLocal)
+                    {
+                        otherPlayers.Add(kvp.Key, player);
+                    }
+                }
+                return otherPlayers;
+            }
+        }
+        public Player LocalPlayer { get { return this.lbc?.LocalPlayer; } }
+        public void OpRaiseEvent(byte eventCode, string eventContent)
+        {
+            Debug.Log($"<color=#99FF99>OpRaiseEvent, {eventCode}</color>");
+            this.lbc.OpRaiseEvent(eventCode, eventContent, RaiseEventOptions.Default, SendOptions.SendReliable);
         }
     }
 }

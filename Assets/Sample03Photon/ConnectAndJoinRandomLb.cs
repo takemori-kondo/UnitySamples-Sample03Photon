@@ -13,7 +13,7 @@ using UnityEngine.UI;
 
 namespace Photon.Realtime.Demo
 {
-    public class ConnectAndJoinRandomLb : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks
+    public class ConnectAndJoinRandomLb : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks, IOnEventCallback
     {
         [SerializeField]
         private AppSettings appSettings = new AppSettings();
@@ -28,6 +28,8 @@ namespace Photon.Realtime.Demo
         [SerializeField] private Button btnChara2;
         [SerializeField] private Button btnChara3;
         [SerializeField] private Button btnChara4;
+        private const int EVENT_CODE_DEBUG = 0;
+        [SerializeField] private Button btnOpRaiseEvent;
 
         public void Start()
         {
@@ -51,6 +53,7 @@ namespace Photon.Realtime.Demo
             this.btnChara2?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara2));
             this.btnChara3?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara3));
             this.btnChara4?.onClick.AddListener(() => OnBtnCharaClick(this.btnChara4));
+            this.btnOpRaiseEvent?.onClick.AddListener(() => OnBtnOpRaiseEventClick());
         }
 
         public void Update()
@@ -195,6 +198,19 @@ namespace Photon.Realtime.Demo
 
         #endregion
 
+        #region IOnEventCallback ###############################################################
+
+        public void OnEvent(EventData photonEvent)
+        {
+            if (photonEvent.Code == EVENT_CODE_DEBUG)
+            {
+                var eventContent = photonEvent.Parameters?[ParameterCode.Data] as string;
+                Debug.Log($"<color=#99FF99>OnEvent eventCode={photonEvent.Code}, eventContent={eventContent}</color>");
+            }
+        }
+
+        #endregion
+
         private void OnBtnJoinClick()
         {
             this.btnJoinIsPressed = !this.btnJoinIsPressed;
@@ -221,6 +237,14 @@ namespace Photon.Realtime.Demo
                 button == this.btnChara4 ? "chara4" :
                 "unknown";
             this.lbc.LocalPlayer.SetCustomProperties(hashtable);
+        }
+
+        private void OnBtnOpRaiseEventClick()
+        {
+            var selectedChara = this.lbc.LocalPlayer.CustomProperties[CHARACTER] ?? "unknown";
+            var eventContent = $"{selectedChara} sent debug message!";
+            this.lbc.OpRaiseEvent(EVENT_CODE_DEBUG, eventContent, RaiseEventOptions.Default, SendOptions.SendReliable);
+            Debug.Log("<color=#99FF99>OpRaiseEvent</color>");
         }
     }
 }

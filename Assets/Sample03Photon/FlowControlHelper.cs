@@ -219,6 +219,24 @@ public class FlowControlHelper
         return true;
     }
 
+    public string GetDebugText()
+    {
+        var sortedPlayers = this.Client?.Players?.OrderBy(kvp => kvp.Key);
+        var text = $"{nameof(this.Client)}={this.Client}\n";
+        text += $"{nameof(this.PayloadCache)}={this.PayloadCache}\n";
+        text += $"{nameof(this.PropKey)}={this.PropKey}, {nameof(this.CurrentState)}={this.CurrentState}\n";
+        if (sortedPlayers != null)
+        {
+            foreach (var kvp in sortedPlayers)
+            {
+                var player = kvp.Value;
+                var commState = (CommState)(player?.CustomProperties[this.PropKey] ?? CommState.Free);
+                text += $"p={kvp.Key}, commState={commState}\n";
+            }
+        }
+        return text;
+    }
+
 
     //-------------------------
 

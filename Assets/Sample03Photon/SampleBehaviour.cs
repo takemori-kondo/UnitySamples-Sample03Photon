@@ -7,6 +7,7 @@ public class SampleBehaviour : MonoBehaviour
     [SerializeField] private ConnectAndJoinRandomLb connectAndJoinRandomLb;
     [SerializeField] private Button btnPropose;
     [SerializeField] private Button btnPrepared;
+    [SerializeField] private GameObject debug;
     private FlowControlHelper flowControlHelper = null;
 
     // Start is called before the first frame update
@@ -24,6 +25,16 @@ public class SampleBehaviour : MonoBehaviour
     private void Update()
     {
         this.flowControlHelper.Update();
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            var reversedActive = this.debug?.gameObject?.activeSelf ?? true;
+            this.debug?.gameObject.SetActive(!reversedActive);
+        }
+        var txt = this.debug.GetComponentInChildren<Text>();
+        if (txt != null)
+        {
+            txt.text = this.flowControlHelper.GetDebugText();
+        }
     }
 
     private void OnBtnProposeClick()

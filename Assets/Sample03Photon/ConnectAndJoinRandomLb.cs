@@ -23,7 +23,7 @@ namespace Photon.Realtime.Demo
         [SerializeField] protected Text StateUiText;
         [SerializeField] protected Button btnJoin;
         protected bool btnJoinIsPressed = false;
-        protected const string CHARACTER = "character";
+        public const string CHARACTER = "character";
         [SerializeField] protected Button btnChara1;
         [SerializeField] protected Button btnChara2;
         [SerializeField] protected Button btnChara3;
@@ -33,7 +33,7 @@ namespace Photon.Realtime.Demo
         protected float delta_sec = 0f;
         protected const float INTERVAL_SEC = 0.8f;
 
-        public void Start()
+        protected virtual void Start()
         {
             this.lbc = new LoadBalancingClient();
             this.lbc.AddCallbackTarget(this);
@@ -58,7 +58,7 @@ namespace Photon.Realtime.Demo
             this.btnOpRaiseEvent?.onClick.AddListener(() => OnBtnOpRaiseEventClick());
         }
 
-        public void Update()
+        protected virtual void Update()
         {
             LoadBalancingClient client = this.lbc;
             if (client != null)
@@ -110,7 +110,7 @@ namespace Photon.Realtime.Demo
         {
         }
 
-        public void OnConnectedToMaster()
+        public virtual void OnConnectedToMaster()
         {
             Debug.Log("OnConnectedToMaster");
         }
@@ -179,7 +179,7 @@ namespace Photon.Realtime.Demo
         {
         }
 
-        public void OnJoinedRoom()
+        public virtual void OnJoinedRoom()
         {
             Debug.Log("OnJoinedRoom");
         }

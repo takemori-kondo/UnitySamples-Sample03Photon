@@ -16,22 +16,22 @@ namespace Photon.Realtime.Demo
     public class ConnectAndJoinRandomLb : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks, IOnEventCallback
     {
         [SerializeField]
-        private AppSettings appSettings = new AppSettings();
-        private LoadBalancingClient lbc;
+        protected AppSettings appSettings = new AppSettings();
+        protected LoadBalancingClient lbc;
 
-        private ConnectionHandler ch;
-        [SerializeField] private Text StateUiText;
-        [SerializeField] private Button btnJoin;
-        private bool btnJoinIsPressed = false;
-        private const string CHARACTER = "character";
-        [SerializeField] private Button btnChara1;
-        [SerializeField] private Button btnChara2;
-        [SerializeField] private Button btnChara3;
-        [SerializeField] private Button btnChara4;
-        private const int EVENT_CODE_DEBUG = 0;
-        [SerializeField] private Button btnOpRaiseEvent;
-        private float delta_sec = 0f;
-        private const float INTERVAL_SEC = 0.8f;
+        protected ConnectionHandler ch;
+        [SerializeField] protected Text StateUiText;
+        [SerializeField] protected Button btnJoin;
+        protected bool btnJoinIsPressed = false;
+        protected const string CHARACTER = "character";
+        [SerializeField] protected Button btnChara1;
+        [SerializeField] protected Button btnChara2;
+        [SerializeField] protected Button btnChara3;
+        [SerializeField] protected Button btnChara4;
+        protected const int EVENT_CODE_DEBUG = 0;
+        [SerializeField] protected Button btnOpRaiseEvent;
+        protected float delta_sec = 0f;
+        protected const float INTERVAL_SEC = 0.8f;
 
         public void Start()
         {
@@ -80,7 +80,7 @@ namespace Photon.Realtime.Demo
             }
         }
 
-        private string GetStateText(LoadBalancingClient client, string state)
+        protected string GetStateText(LoadBalancingClient client, string state)
         {
             var selectedChara = client.LocalPlayer.CustomProperties[CHARACTER] ?? "";
             var currentRoom = client.CurrentRoom;
@@ -136,7 +136,7 @@ namespace Photon.Realtime.Demo
 
         /// <summary>A callback of the RegionHandler, provided in OnRegionListReceived.</summary>
         /// <param name="regionHandler">The regionHandler wraps up best region and other region relevant info.</param>
-        private void OnRegionPingCompleted(RegionHandler regionHandler)
+        protected void OnRegionPingCompleted(RegionHandler regionHandler)
         {
             Debug.Log("OnRegionPingCompleted " + regionHandler.BestRegion);
             Debug.Log("RegionPingSummary: " + regionHandler.SummaryToCache);
@@ -223,7 +223,7 @@ namespace Photon.Realtime.Demo
 
         #endregion
 
-        private void OnBtnJoinClick()
+        protected void OnBtnJoinClick()
         {
             this.btnJoinIsPressed = !this.btnJoinIsPressed;
             var btnJoinText = this.btnJoin.GetComponentInChildren<TextMeshProUGUI>();
@@ -239,7 +239,7 @@ namespace Photon.Realtime.Demo
             }
         }
 
-        private void OnBtnCharaClick(Button button)
+        protected void OnBtnCharaClick(Button button)
         {
             var hashtable = new Hashtable();
             hashtable[CHARACTER] =
@@ -251,7 +251,7 @@ namespace Photon.Realtime.Demo
             this.lbc.LocalPlayer.SetCustomProperties(hashtable);
         }
 
-        private void OnBtnOpRaiseEventClick()
+        protected void OnBtnOpRaiseEventClick()
         {
             var selectedChara = this.lbc.LocalPlayer.CustomProperties[CHARACTER] ?? "unknown";
             var eventContent = $"{selectedChara} sent debug message!";

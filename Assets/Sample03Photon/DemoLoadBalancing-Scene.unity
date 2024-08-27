@@ -1584,10 +1584,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 4a4df204c321f9c40b0dbfb1baaffb4c, type: 3}
-    m_FontSize: 16
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 1
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1595,7 +1595,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "State: n/a\nCurrent Room: \nSelected Chara: \nRoom Members: "
+  m_Text: "State: n/a\nAppVersion: \nCloud Region: \nCurrent Lobby: \nCurrent Room:
+    \nSelected Chara: \nRoom Members: "
 --- !u!222 &1302440788
 CanvasRenderer:
   m_ObjectHideFlags: 0

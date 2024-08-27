@@ -98,10 +98,13 @@ namespace Photon.Realtime.Demo
                 }
                 roomMembers.Trim();
             }
-            return "State: " + state + "\n"
-                + "Current Room: " + (currentRoom?.Name ?? "") + "\n"
-                + "Selected Chara: " + selectedChara + "\n"
-                + "Room Members: " + roomMembers;
+            return $"State: {state}\n"
+                + $"AppVersion: {client.AppVersion}\n"
+                + $"Cloud Region: {client.CloudRegion}\n"
+                + $"Current Lobby: {client.CurrentLobby?.Name}\n"
+                + $"Current Room: {currentRoom?.Name}\n"
+                + $"Selected Chara: {selectedChara}\n"
+                + $"Room Members: {roomMembers}";
         }
 
         #region IConnectionCallbacks ###########################################################

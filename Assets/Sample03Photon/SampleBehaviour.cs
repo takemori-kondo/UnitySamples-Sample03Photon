@@ -16,7 +16,7 @@ public class SampleBehaviour : MonoBehaviour
         this.btnPropose.onClick.AddListener(OnBtnProposeClick);
         this.btnPrepared.onClick.AddListener(OnBtnPreparedClick);
 
-        this.flowControlHelper = new FlowControlHelper(this.connectAndJoinRandomLb, 15, 5, 0);
+        this.flowControlHelper = new FlowControlHelper(this.connectAndJoinRandomLb, 15, 1.5f, 5, 0);
         this.flowControlHelper.OnCommandReceived += FlowControlHelper_OnCommandReceived;
         this.flowControlHelper.OnCommandSent += FlowControlHelper_OnCommandSent;
     }

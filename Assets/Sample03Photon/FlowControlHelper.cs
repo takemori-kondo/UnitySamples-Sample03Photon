@@ -54,6 +54,7 @@ public class FlowControlHelper
     public string PayloadCache { get; private set; } = string.Empty;
     public readonly float ProposeWaitMax_sec;
     private float proposeCounter_sec = 0;
+    public readonly float DummyWait_sec;
     public readonly float ConflictDelayRange_sec;
     private float conflictDelay_sec = 0;
     private float conflictCounter_sec = 0;
@@ -62,7 +63,7 @@ public class FlowControlHelper
     private string PropKey { get { return COMM_STATE + this.AdditionalCodeValue.ToString(); } }
     private byte AddedCode(CommState commState) { return (byte)((int)commState + this.AdditionalCodeValue); }
 
-    public FlowControlHelper(ConnectAndJoinRandomLb client, float proposeWaitMax_sec = 10.0f, float conflictDelayRange_sec = 3.0f, int additionalCodeValue = 0)
+    public FlowControlHelper(ConnectAndJoinRandomLb client, float proposeWaitMax_sec = 10.0f, float dummyWait_sec = 1.5f, float conflictDelayRange_sec = 3.0f, int additionalCodeValue = 0)
     {
         this.Client = client;
         if (this.Client != null)
@@ -74,6 +75,7 @@ public class FlowControlHelper
         }
 
         this.ProposeWaitMax_sec = proposeWaitMax_sec;
+        this.DummyWait_sec = dummyWait_sec;
         this.ConflictDelayRange_sec = conflictDelayRange_sec;
 
         if (additionalCodeValue < 0 || 10 <= additionalCodeValue) throw new ArgumentException($"additionalCodeValue must be 0-9");
@@ -179,7 +181,7 @@ public class FlowControlHelper
         // Proposed状態：判断にPhoton値を参照するため、値が遅れてることの考慮が必要
         if (this.CurrentState == CommState.Proposed)
         {
-            if (this.OtherPlayersAre(new[] { CommState.Received }) || this.ProposeWaitMax_sec <= this.proposeCounter_sec)
+            if (this.OtherPlayersAre(new[] { CommState.Received }, true) || this.ProposeWaitMax_sec <= this.proposeCounter_sec)
             {
                 this.SendEvent(CommState.Ready);
             }
@@ -256,7 +258,7 @@ public class FlowControlHelper
         this.CurrentState = commState;
     }
 
-    private bool OtherPlayersAre(CommState[] expectedStates)
+    private bool OtherPlayersAre(CommState[] expectedStates, bool doesDummyWait = false)
     {
         var otherPlayers = this.Client?.OtherPlayers;
         if (otherPlayers != null)
@@ -269,6 +271,17 @@ public class FlowControlHelper
                 {
                     return false;
                 }
+            }
+        }
+        else
+        {
+            if (doesDummyWait)
+            {
+                if (this.proposeCounter_sec < this.DummyWait_sec)
+                {
+                    return false;
+                }
+                Debug.Log("DummyWait End");
             }
         }
         return true;

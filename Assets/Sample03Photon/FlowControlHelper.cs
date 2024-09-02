@@ -168,6 +168,16 @@ public class FlowControlHelper
             this.CurrentState = CommState.Free;
         }
 
+        // 全てReceivedになってしまった場合、PayloadCache持ちはConflict扱いに戻す
+        if (this.CurrentState == CommState.Received)
+        {
+            if (this.OtherPlayersAre(new[] { CommState.Received }) &&
+                !string.IsNullOrWhiteSpace(this.PayloadCache))
+            {
+                this.CurrentState = CommState.Conflicted;
+            }
+        }
+
         // Conflicted状態：判断にPhoton値を参照するため、値が遅れてることの考慮が必要
         if (this.CurrentState == CommState.Conflicted)
         {
